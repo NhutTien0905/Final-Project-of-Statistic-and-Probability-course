@@ -1,0 +1,186 @@
+```{r}
+# khai báo thư viện readxl
+library(readxl)
+
+# đọc dữ liệu từ file
+data = read_excel("Mg_alloys_data.xlsx")
+# in ra 5 dòng đầu của dữ liệu
+head(data,5)
+```
+```{r}
+# kiểm tra dữ liệu có dữ liệu lỗi không
+apply(is.na(data),2,which)
+```
+```{r}
+# tìm giá  trị trung bình
+mean = apply(data,2,mean)
+
+# tìm độ lệch chuẩn
+sd = apply(data,2,sd)
+
+# tìm min
+min_value = apply(data,2,min)
+
+# tìm max
+max_value = apply(data,2,max)
+
+# tìm giá trị tại điểm có xác suất phân bố là 25%
+Q1 = apply(data,2,quantile,probs=0.25)
+
+# tìm giá trị tại điểm có xác suất phân bố là 50%
+median = apply(data,2,median)
+
+# tìm giá trị tại điểm có xác suất phân bố là 75%
+Q3 = apply(data,2,quantile,probs=0.75)
+
+# in ra bảng dữ liệu của các phép tính trên
+t(data.frame(mean,sd,min_value,max_value,Q1,median,Q3))
+```
+```{r}
+# operator $ dùng để lấy dữ liệu của một cột dữ liệu chỉ định
+
+# tạo subplot có 1 hàng 3 cột 
+par(mfrow=c(1,3))
+
+# vẽ biểu đồ histogram thể hiện sự phân bố cho 3 cột YTS, UTS, EL
+hist(data$YTS,xlab="YTS",main="Distribution of YTS",ylim=c(0,100),col=2,labels=T)
+hist(data$UTS,xlab="UTS",main="Distribution of UTS",ylim=c(0,100),col=3,labels=T)
+hist(data$EL,xlab="EL",main="Distribution of EL",ylim=c(0,80),col=5,labels=T)
+```
+```{r}
+# tạo subplot có 1 hàng 2 cột
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Mn, Al lên YTS
+plot(YTS~Mn,data=data,xlab="Mn",ylab="YTS",main="Plot of YTS and Mn", col="blue")
+plot(YTS~Al,data=data,xlab="Al",ylab="YTS",main="Plot of YTS and Al", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Zn, Sn lên YTS
+plot(YTS~Zn,data=data,xlab="Zn",ylab="YTS",main="Plot of YTS and Zn", col="blue")
+plot(YTS~Sn,data=data,xlab="Sn",ylab="YTS",main="Plot of YTS and Sn", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Ca, ET lên YTS
+plot(YTS~Ca,data=data,xlab="Ca",ylab="YTS",main="Plot of YTS and Ca", col="blue")
+plot(YTS~ET,data=data,xlab="ET",ylab="YTS",main="Plot of YTS and ET", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của ES, ER lên YTS
+plot(YTS~ES,data=data,xlab="ES",ylab="YTS",main="Plot of YTS and ES", col="blue")
+plot(YTS~ER,data=data,xlab="ER",ylab="YTS",main="Plot of YTS and ER", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Mn, Al lên UTS
+plot(UTS~Mn,data=data,xlab="Mn",ylab="UTS",main="Plot of UTS and Mn",
+     col="blue")
+plot(UTS~Al,data=data,xlab="Al",ylab="UTS",main="Plot of UTS and Al", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Zn, Sn lên UTS
+plot(YTS~Zn,data=data,xlab="Zn",ylab="UTS",main="Plot of UTS and Zn", col="blue")
+plot(YTS~Sn,data=data,xlab="Sn",ylab="UTS",main="Plot of UTS and Sn", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Ca, ET lên UTS
+plot(UTS~Ca,data=data,xlab="Ca",ylab="UTS",main="Plot of UTS and Ca", col="blue")
+plot(UTS~ET,data=data,xlab="ET",ylab="UTS",main="Plot of UTS and ET", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của ES, ER lên UTS
+plot(UTS~ES,data=data,xlab="ES",ylab="UTS",main="Plot of UTS and ES", col="blue")
+plot(UTS~ER,data=data,xlab="ER",ylab="UTS",main="Plot of UTS and ER", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Mn, Al lên EL
+plot(EL~Mn,data=data,xlab="Mn",ylab="EL",main="Plot of EL and Mn", col="blue")
+plot(EL~Al,data=data,xlab="Al",ylab="EL",main="Plot of EL and Al", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Zn, Sn lên EL
+plot(EL~Zn,data=data,xlab="Zn",ylab="EL",main="Plot of EL and Zn", col="blue")
+plot(EL~Sn,data=data,xlab="Sn",ylab="EL",main="Plot of EL and Sn", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của Ca, ET lên EL
+plot(EL~Ca,data=data,xlab="Ca",ylab="EL",main="Plot of EL and Ca", col="blue")
+plot(EL~ET,data=data,xlab="ET",ylab="EL",main="Plot of EL and ET", col="blue")
+```
+```{r}
+par(mfrow = c(1,2))
+
+# vẽ biểu đồ thể hiện sự ảnh hưởng của ES, ER lên EL
+plot(EL~ES,data=data,xlab="ES",ylab="EL",main="Plot of EL and ES", col="blue")
+plot(EL~ER,data=data,xlab="ER",ylab="EL",main="Plot of EL and ER", col="blue")
+```
+```{r}
+# fit model cho việc hồi quy tuyến tính dự đoán YTS dự trên ảnh hưởng của các yếu tố 
+model_1 = lm(YTS~Mn+Al+Zn+Sn+Ca+ES+ER+ET,data=data)
+summary(model_1)
+```
+```{r}
+model_2 = lm(YTS~Mn+Sn+Ca+ES+ER,data=data)
+summary(model_2)
+```
+```{r}
+# phân tích phương sai giữa 2 model
+anova(model_1,model_2)
+```
+```{r}
+plot(model_2)
+```
+```{r}
+# fit model cho việc hồi quy tuyến tính dự đoán UTS dự trên ảnh hưởng của các yếu tố 
+model_3 = lm(UTS~Mn+Al+Zn+Sn+Ca+ES+ER+ET,data=data)
+summary(model_3)
+```
+```{r}
+# fit model cho việc hồi quy tuyến tính dự đoán UTS dự trên ảnh hưởng của các yếu tố (ngoại trừ ET)
+model_4 = lm(UTS~Mn+Al+Zn+Sn+Ca+ES+ER,data=data)
+summary(model_4)
+```
+```{r}
+# phân tích phương sai giữa 2 model
+anova(model_3,model_4)
+```
+```{r}
+plot(model_4)
+```
+```{r}
+# fit model cho việc hồi quy tuyến tính dự đoán EL dự trên ảnh hưởng của các yếu tố chỉ định
+model_5 = lm(EL~Mn+Al+Zn+Sn+Ca+ES+ER+ET,data=data)
+summary(model_5)
+```
+```{r}
+# fit model cho việc hồi quy tuyến tính dự đoán UTS dự trên ảnh hưởng của các yếu tố chỉ định (ngoại trừ ES, Mn, ER)
+model_6 = lm(EL~Al+Zn+Sn+Ca+ET,data=data)
+summary(model_6)
+```
+```{r}
+# phân tích phương sai cho 2 model
+anova(model_5,model_6)
+```
+```{r}
+plot(model_6)
+```
+

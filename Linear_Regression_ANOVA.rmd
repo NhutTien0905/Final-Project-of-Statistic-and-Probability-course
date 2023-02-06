@@ -1,0 +1,106 @@
+1. XỬ LÍ SỐ LIỆU
+a)
+```{r}
+data = read.csv("Diet.csv")
+#xem du lieu 10 dong dau tien
+head(data,10)
+
+#loc du lieu co ton tai vao "Diet"
+subdata=subset(data, Person != is.na(data$Person)) 
+head(subdata,10) 
+
+#thong ke mo ta theo cac che do an kieng 
+by(subdata[,c(2,3,4,5,7)],subdata$Diet,summary)
+```
+b)
+```{r}
+#so luong khuyet trong du lieu
+apply(is.na(subdata),2,sum)
+#vi tri du lieu khuyet
+apply(is.na(subdata),2,which) 
+#thong ke ti le du lieu khuyet
+apply(is.na(subdata),2,mean) 
+
+#xoa cac du lieu khuyet
+Diet= na.omit(subdata) 
+#kiem tra lai so luong khuyet trong du lieu
+apply(is.na(subdata),2,sum) 
+```
+c)
+```{r}
+#tạo biến weight.loss
+subdata$weight.loss = subdata$pre.weight - subdata$weight6weeks
+head(subdata,10)
+#thong ke mo ta cho cac bien pre.weight, weight6weeks, weight.loss
+by(subdata[,c(5,7,8)],subdata$Diet,summary) 
+
+#ve bieu do hop cua weight.loss theo Diet
+boxplot(subdata$weight.loss ~ subdata$Diet, xlab="Diet", ylab="weight.loss" ,main="Boxplot of weight.loss for Diet",col=c(2,3,5) ) 
+```
+d)
+```{r}
+#kiem dinh theo cP
+t.test(subdata$pre.weight,subdata$weight6weeks,paired = T, alternative = "greater")  
+```
+2. PHÂN TÍCH PHƯƠNG SAI MỘT NHÂN TỐ
+b)
+```{r}
+#lọc dữ liệu theo chế độ ăn kiêng 1
+Diet1=subset(subdata, Diet==1)
+#vẽ đồ thị kiểm tra giả định phân phối chuẩn
+qqnorm(Diet1$weight.loss) 
+qqline(Diet1$weight.loss)
+#thực hiện kiểm định Shapiro - Wilk để kiểm tra giả định phân phối chuẩn
+shapiro.test(Diet1$weight.loss)  
+
+#lọc dữ liệu theo chế độ ăn kiêng 2
+Diet2=subset(subdata, Diet==2)
+#vẽ đồ thị kiểm tra giả định phân phối chuẩn
+qqnorm(Diet2$weight.loss) 
+qqline(Diet2$weight.loss)
+#thực hiện kiểm định Shapiro - Wilk
+shapiro.test(Diet2$weight.loss)   
+
+#lọc dữ liệu theo chế độ ăn kiêng 3
+Diet3=subset(subdata, Diet==3)
+#vẽ đồ thị kiểm tra giả định phân phối chuẩn
+qqnorm(Diet3$weight.loss) 
+qqline(Diet3$weight.loss)
+#thực hiện kiểm định Shapiro - Wilk 
+shapiro.test(Diet3$weight.loss) 
+
+```
+```{r}
+# bartlett test
+bartlett.test(weight.loss ~ as.factor(Diet), data = subdata) #kiểm định Bartlett tính đồng nhất của phương sai 
+```
+c)
+```{r}
+#phân tích phương sai một nhân tố 
+anoval=aov(weight.loss ~ as.factor(Diet), data = subdata) 
+#tóm tắt kết quả mô hình phân tích phương sai một nhân tố
+summary(anoval) 
+```
+d)
+```{r}
+#so sánh bội
+TukeyHSD(anoval)
+#vẽ đồ thị so sánh bội
+plot(TukeyHSD(anoval)) 
+```
+3. PHÂN TÍCH PHƯƠNG SAI HAI NHÂN TỐ
+```{r}
+# phân tích phương sai hai nhân tố
+anova2= aov(weight.loss ~ as.factor(gender)* as.factor(Diet),data=subdata) 
+# tóm tắt kết quả mô hình anova hai nhân tố
+summary(anova2) 
+```
+```{r}
+# vẽ đồ thị sự tương tác 
+interaction.plot(subdata$Diet,subdata$gender,subdata$weight.loss,type="b",col=c(2:3),leg.bty="o",leg.bg="beige",lwd=2,pch=c(2,3))
+```
+
+
+```{r}
+```
+

@@ -1,0 +1,163 @@
+1. ĐỌC DỮ LIỆU
+```{r}
+# đọc dữ liệu
+data = read.csv("diem_so.csv")
+# đọc 10 dòng đầu của dữ liệu
+head(data,10)
+```
+2. XỬ LÍ DỮ LIỆU:
+a) Lọc dữ liệu:
+```{r}
+# lọc dữ liệu
+subdata = data[,c("G1","G2","G3","studytime","failures","absences","higher","age")]  
+# xuất ra 3 dòng đầu của dữ liệu
+head(subdata,10) 
+```
+b) Làm sạch dữ liệu
+```{r}
+#liệt kê các biến khuyết dữ liệu
+apply(is.na(subdata),2,which) 
+print("--------------------------------------------------------------------------------------")
+
+# tổng các dữ liệu bị khuyết
+apply(is.na(subdata),2,sum)
+print("--------------------------------------------------------------------------------------")
+
+# tỷ lệ dữ liệu khiếm khuyết
+apply(is.na(subdata),2,mean)
+```
+```{r}
+# loại bỏ dữ liệu bị khuyết
+subdata  = na.omit(subdata)
+
+# kiểm tra lại dữ liệu
+apply(is.na(subdata),2,sum)  
+```
+3. PHÂN TÍCH SÓ LIỆU:
+a) 
+```{r}
+# tính trung bình mẫu
+mean = apply(subdata[,c("G1","G2","G3")],2,mean)
+
+# tính độ lệch chuẩn
+sd = apply(subdata[,c("G1","G2","G3")],2,sd)
+
+# tìm giá trị tại xác suất phân bổ là 25%
+Q1 = apply(subdata[,c("G1","G2","G3")],2,quantile,probs=0.25)
+
+# tìm trung vị của dữ liệu
+median = apply(subdata[,c("G1","G2","G3")],2,median)
+
+# tìm giá trị tại xác suất phân bổ là 75%
+Q3 = apply(subdata[,c("G1","G2","G3")],2,quantile,probs=0.75)
+
+# tìm giá trị nhỏ nhất của dữ liệu
+min_value = apply(subdata[,c("G1","G2","G3")],2,min)
+
+# tìm giá trị lớn nhất của dữ liệu
+max_value = apply(subdata[,c("G1","G2","G3")],2,max)
+
+# xuát các giá trị ra dạng bảng
+t(data.frame(mean,sd,Q1,median,Q3,min_value,max_value))
+```
+b)
+```{r}
+table(subdata[,"studytime"])
+print("--------------------------------------------------------------------------------------")
+table(subdata[,"failures"]) 
+print("--------------------------------------------------------------------------------------")
+table(subdata[,"absences"]) 
+print("--------------------------------------------------------------------------------------")
+table(subdata[,"higher"]) 
+print("--------------------------------------------------------------------------------------")
+table(subdata[,"age"])
+```
+c)
+```{r}
+# vẽ biểu đồ histogram thể hiện sự phân bố của G3
+hist(subdata$G3,main="Histogram of G3",xlab="G3",ylab="Frequency",col=c("deepskyblue3"),label=T,ylim=c(0,90))
+```
+d)
+```{r}
+boxplot(G3~studytime, data=subdata,xlab="studytime", ylab="G3", main="Boxplot of G3 for a category of studytime",col=c(2,4,6,15))
+```
+```{r}
+boxplot(G3~failures, data=subdata, xlab="failures", ylab="G3", main="Boxplot of G3 for a category of failures",col=c(2,4,6,15))
+```
+```{r}
+boxplot(G3~higher, data=subdata, xlab="higher", ylab="G3", main="Boxplot of G3 for a category of higher",col=c(2,4,6,15))
+```
+e)
+```{r}
+# vẽ ma trận đô thị thể hiện mối quan hệ giữa các yếu tố
+pairs(G3 ~ G1, main ="Pairs of G3 for G1", data = subdata,col="blue")
+pairs(G3 ~ G2, main ="Pairs of G3 for G2", data = subdata,col="blue")
+pairs(G3 ~ age, main ="Pairs of G3 for age", data = subdata,col="brown")
+pairs(G3 ~ absences, main ="Pairs of G3 for absences", data = subdata,col="brown")
+```
+4. XÂY DỰNG MÔ HÌNH HỒI QUY:
+```{r}
+#Chuyển failures thành biến nhân tố 
+subdata$failures = as.factor(subdata$failures)  
+#Chuyển studytime thành biến nhân tố
+subdata$studytime = as.factor(subdata$studytime)   
+#Chuyển higher thành biến nhân tố 
+subdata$higher = as.factor(subdata$higher) 
+
+M1 = lm(G3 ~ G1 + G2 + studytime + failures + absences + higher + age, data = subdata)
+# tóm tắt mô hình M1
+summary(M1) 
+```
+```{r}
+# mô hình m2 bỏ biến higher
+M2 = lm(G3 ~ G1 + G2 + studytime + failures + absences + age, data = subdata)
+summary(M2) #tom tat mo hinh  M2
+```
+```{r}
+# mô hình M3 bỏ biến failures
+M3 = lm(G3 ~ G1 + G2 + studytime + absences + age, data = subdata)  
+# tóm tắt mô hình
+summary(M3)
+```
+```{r}
+# phân tích ANOVA giữa mô hình M1 và M2
+anova(M1,M2)
+
+# phân tích ANOVA giữa mô hình M2 và M3
+anova(M2,M3)
+```
+```{r}
+# đồ thị biểu diễn cho mô hình M2
+plot(M2, which=1)
+```
+5.
+```{r}
+evaluate = prop.table(table(subdata$G3>=10))
+t(evaluate)
+```
+```{r}
+# tạo bảng data mới
+df =data.frame(subdata[,c(1,2,4,5,6,7,8)])
+# xem 3 dòng đầu tiên
+head(df,3) 
+
+# dự báo biến G3
+df$pred_G3 = predict(M2,df)  
+head(df, 3) 
+
+#Thống kê tỷ lệ đạt/ không đạt của 'G3' (dự báo)
+evaluate1 <-prop.table(table(df$pred_G3>=10)) 
+# xem ket qua
+View(evaluate1) 
+```
+```{r}
+# Tạo bảng so sánh kqua
+So_sanh = data.frame(cbind(evaluate,evaluate1)) 
+# Đổi tên cột tên cột
+colnames(So_sanh)=c("Quan sat","Du bao")   
+# Đổi tên hàng
+rownames(So_sanh)=c("Khong Dat", "Dat")   
+#Đổi cột thành hàng và cho kết quả
+t(So_sanh) 
+```
+
